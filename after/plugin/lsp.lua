@@ -1,4 +1,8 @@
 local lsp = require("lsp-zero")
+-- local util = require("lspconfig/util")
+-- require('lspconfig').cmake.setup {
+--     root_dir = util.root_pattern("build", "compile_commands.json", ".git")
+-- }
 
 lsp.preset("recommended")
 
