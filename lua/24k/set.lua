@@ -23,4 +23,8 @@ vim.opt.smartindent = true
 
 vim.opt.wrap = false
 
+vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir"
+vim.opt.undofile = true
+
+-- https://github.com/ThePrimeagen/init.lua/blob/249f3b14cc517202c80c6babd0f9ec548351ec71/lua/theprimeagen/set.lua
 -- https://neovim.io/doc/user/quickref.html#option-list

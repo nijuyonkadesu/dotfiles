@@ -1,8 +1,17 @@
 local lsp = require("lsp-zero")
--- local util = require("lspconfig/util")
--- require('lspconfig').cmake.setup {
+require("mason").setup()
+
+local lspconfig = require('lspconfig')
+local util = require("lspconfig/util")
+-- lspconfig.cmake.setup {
 --     root_dir = util.root_pattern("build", "compile_commands.json", ".git")
 -- }
+lspconfig.pyright.setup ({
+    root_dir = function(fname)
+        return util.root_pattern(".git", "setup.py", "setup.cfg", "pyproject.toml", "requirements.txt")(fname) or
+          util.path.dirname(fname)
+    end
+})
 
 lsp.preset("recommended")
 
@@ -13,22 +22,26 @@ lsp.preset("recommended")
 -- Fix Undefined global 'vim'
 
 local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ["<C-Space>"] = cmp.mapping.complete(),
-})
+local cmp_action = require("lsp-zero").cmp_action()
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
+    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+    ['<CR>'] = cmp.mapping.confirm({
+          behavior = cmp.ConfirmBehavior.Replace,
+          select = true,
+        }),
+    ['<Tab>'] = nil,
+    ['<S-Tab>'] = nil,
 
+  }),
+})
 -- disable completion with tab
 -- this helps with copilot setup
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
-lsp.setup_nvim_cmp({
-  mapping = cmp_mappings
-})
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
