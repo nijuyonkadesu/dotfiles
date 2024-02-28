@@ -1,5 +1,6 @@
 local lsp = require("lsp-zero")
 require("mason").setup()
+require("mason-lspconfig").setup()
 
 local lspconfig = require('lspconfig')
 local util = require("lspconfig/util")
@@ -12,6 +13,21 @@ lspconfig.pyright.setup ({
           util.path.dirname(fname)
     end
 })
+
+lspconfig.jsonls.setup {}
+lspconfig.helm_ls.setup {
+    settings = {
+        ['helm-ls'] = {
+            yamlls = {
+                path = "yaml-language-server",
+            }
+        }
+    }
+}
+lspconfig.yamlls.setup {}
+lspconfig.gopls.setup {}
+-- lspconfig.prettier.setup {}
+-- use null ls / nvim lint
 
 lsp.preset("recommended")
 

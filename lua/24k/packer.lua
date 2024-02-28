@@ -23,6 +23,11 @@ return require('packer').startup(function()
   use ('ThePrimeagen/harpoon')
   use ('mbbill/undotree')
   use ('tpope/vim-fugitive')
+  use {
+    'towolf/vim-helm',
+    ft = { 'helm' }, 
+    event = { "BufReadPre", "BufNewFile", "BufEnter" }
+  }
 
   -- LSP zero
   use {
