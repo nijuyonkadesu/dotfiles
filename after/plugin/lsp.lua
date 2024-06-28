@@ -8,11 +8,15 @@ local util = require("lspconfig/util")
 --     root_dir = util.root_pattern("build", "compile_commands.json", ".git")
 -- }
 lspconfig.pyright.setup ({
-    root_dir = function(fname)
-        return util.root_pattern(".git", "setup.py", "setup.cfg", "pyproject.toml", "requirements.txt")(fname) or
-          util.path.dirname(fname)
-    end
+   root_dir = function(fname)
+       return util.root_pattern("requirements.txt")(fname) or
+         util.path.dirname(fname)
+   end
 })
+--    root_dir = function(fname)
+--        return util.root_pattern(".git", "setup.py", "setup.cfg", "pyproject.toml", "requirements.txt")(fname) or
+--          util.path.dirname(fname)
+--    end
 
 lspconfig.jsonls.setup {}
 lspconfig.helm_ls.setup {
@@ -26,6 +30,9 @@ lspconfig.helm_ls.setup {
 }
 lspconfig.yamlls.setup {}
 lspconfig.gopls.setup {}
+-- lspconfig.mypy.setup { settings = { server = "pyright" } }
+lspconfig.marksman.setup {}
+
 -- lspconfig.prettier.setup {}
 -- use null ls / nvim lint
 

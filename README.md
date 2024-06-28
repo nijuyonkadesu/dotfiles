@@ -27,3 +27,5 @@ All you needed to upscale your vanilla neovim to the Gigachad neovim
 ## Source of Information
 Watch this beautiful [vim rc](https://youtu.be/w7i4amO_zaE) video from [@ThePrimeagen](https://github.com/ThePrimeagen) 
 
+## Tips
+run `:checkhealth` and install dependencies if possible. In my case, I installed **ripgrep** and **fd**
