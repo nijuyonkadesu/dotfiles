@@ -19,6 +19,8 @@ lspconfig.pyright.setup ({
 --    end
 
 lspconfig.jsonls.setup {}
+lspconfig.java_language_server.setup {}
+lspconfig.kotlin_language_server.setup {}
 lspconfig.helm_ls.setup {
     settings = {
         ['helm-ls'] = {
@@ -71,7 +73,7 @@ cmp.setup({
 
   }),
     sources = {
-    { name = "luasnip", keyword_length = 2},
+    { name = "luasnip" }, 
     { name = "path" },
     { name = "nvim_lsp" },
     { name = "buffer", keyword_length = 3 }, 

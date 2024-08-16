@@ -38,6 +38,10 @@ return require('packer').startup(function()
           {'williamboman/mason.nvim'},
           {'williamboman/mason-lspconfig.nvim'},
 
+          -- linters, formatters
+          {'nvim-lua/plenary.nvim'},
+          {'jose-elias-alvarez/null-ls.nvim'},
+
           -- Autocompletion
           {'hrsh7th/nvim-cmp'},
           {'hrsh7th/cmp-buffer'},
