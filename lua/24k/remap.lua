@@ -30,3 +30,19 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 -- lsp format
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
+-- go err
+vim.keymap.set(
+    "n",
+    "<leader>ee",
+    "oif err != nil {<CR>}<Esc>Oreturn err<Esc>"
+)
+
+-- cleans up incorrect json (python dict) 
+vim.keymap.set("n", "<leader>j", function()
+    vim.cmd([[silent! %s/'/"/gi]])
+    vim.cmd([[silent! %s/None/null/gi]])
+    vim.cmd([[silent! %s/True/true/gi]])
+    vim.cmd([[silent! %s/False/false/gi]])
+end)
+vim.keymap.set("v", "<leader>j", "!jq ")
+

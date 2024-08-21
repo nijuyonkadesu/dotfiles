@@ -7,16 +7,14 @@ local util = require("lspconfig/util")
 -- lspconfig.cmake.setup {
 --     root_dir = util.root_pattern("build", "compile_commands.json", ".git")
 -- }
-lspconfig.pyright.setup ({
-   root_dir = function(fname)
-       return util.root_pattern("requirements.txt")(fname) or
-         util.path.dirname(fname)
-   end
+--
+lspconfig.pyright.setup({
+  root_dir = function(fname)
+    return util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "setup.cfg", "app")(fname)
+      or util.root_pattern(".git")(fname)
+      or util.path.dirname(fname)
+  end,
 })
---    root_dir = function(fname)
---        return util.root_pattern(".git", "setup.py", "setup.cfg", "pyproject.toml", "requirements.txt")(fname) or
---          util.path.dirname(fname)
---    end
 
 lspconfig.jsonls.setup {}
 lspconfig.java_language_server.setup {}
