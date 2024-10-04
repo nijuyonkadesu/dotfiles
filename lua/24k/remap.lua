@@ -38,11 +38,42 @@ vim.keymap.set(
 )
 
 -- cleans up incorrect json (python dict) 
-vim.keymap.set("n", "<leader>j", function()
-    vim.cmd([[silent! %s/'/"/gi]])
-    vim.cmd([[silent! %s/None/null/gi]])
-    vim.cmd([[silent! %s/True/true/gi]])
-    vim.cmd([[silent! %s/False/false/gi]])
+vim.keymap.set("v", "<leader>j", function()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local content = table.concat(lines, "\n")
+
+    local tmp_file = os.tmpname()
+    local f = io.open(tmp_file, "w")
+    f:write(content)
+    f:close()
+
+    local python_cmd = string.format([[
+python3 -c "
+import json
+import ast
+
+with open('%s', 'r') as f:
+    content = f.read()
+
+try:
+    data = json.loads(content)
+except json.JSONDecodeError:
+    data = ast.literal_eval(content)
+
+with open('%s', 'w') as f:
+    json.dump(data, f)
+"
+    ]], tmp_file, tmp_file)
+
+    os.execute(python_cmd)
+
+    f = io.open(tmp_file, "r")
+    content = f:read("*all")
+    f:close()
+
+    os.remove(tmp_file)
+
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(content, "\n"))
 end)
-vim.keymap.set("v", "<leader>j", "!jq ")
+vim.keymap.set("v", "<leader>q", "!jq ")
 

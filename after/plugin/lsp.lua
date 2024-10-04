@@ -8,12 +8,34 @@ local util = require("lspconfig/util")
 --     root_dir = util.root_pattern("build", "compile_commands.json", ".git")
 -- }
 --
+-- https://www.reddit.com/r/neovim/comments/17bod01/how_do_i_select_a_python_enviroment_so_pyright/
+-- https://github.com/hahuang65/nvim-config/blob/38aca9f78b4e773d0452ecb953ccdbe9915ac3d9/lua/plugins/lsp.lua#L82
 lspconfig.pyright.setup({
   root_dir = function(fname)
-    return util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "setup.cfg", "app")(fname)
-      or util.root_pattern(".git")(fname)
-      or util.path.dirname(fname)
+    local root = util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "app")(fname)
+        or util.root_pattern(".git")(fname)
+        or util.path.dirname(fname)
+
+    local venv_dir = util.path.join(root, 'venv')
+    if util.path.exists(venv_dir) then
+      vim.g.python3_host_prog = venv_dir .. '/bin/python'
+    end
+
+    return root
   end,
+  settings = {
+    python = {
+      pythonPath = vim.g.python3_host_prog,
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        diagnosticMode = "workspace",
+        extraPaths = {
+          "/Users/sriramv/redacted/airbyte/airbyte-cdk/python"
+        },
+      },
+    }
+  },
 })
 
 lspconfig.jsonls.setup {}
