@@ -77,3 +77,6 @@ with open('%s', 'w') as f:
 end)
 vim.keymap.set("v", "<leader>q", "!jq ")
 
+-- replace new line with actual newline character
+vim.keymap.set("v", "<leader>nl", '%s/\\n/')
+
