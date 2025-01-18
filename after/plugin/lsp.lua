@@ -13,10 +13,12 @@ require("mason-lspconfig").setup({
         "yamlls",
         "marksman",
         "pyright",
-        "black",
         "pyright",
         "jsonls",
         "helm_ls",
+        -- formatters
+        "black",
+        "prettier",
     },
     function(server_name) -- default handler (optional)
         require("lspconfig")[server_name].setup {
@@ -53,9 +55,7 @@ lspconfig.pyright.setup({
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
         diagnosticMode = "workspace",
-        extraPaths = {
-          "/Users/sriramv/redacted/airbyte/airbyte-cdk/python"
-        },
+        extraPaths = dofile(vim.fn.stdpath('config') .. "/after/plugin/extra-paths.lua"),
       },
     }
   },
