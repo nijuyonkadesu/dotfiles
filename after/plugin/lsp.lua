@@ -1,6 +1,29 @@
 local lsp = require("lsp-zero")
+local cmp = require('cmp')
+local cmp_lsp = require("cmp_nvim_lsp")
+local capabilities = vim.tbl_deep_extend(
+            "force",
+            {},
+            vim.lsp.protocol.make_client_capabilities(),
+            cmp_lsp.default_capabilities())
 require("mason").setup()
-require("mason-lspconfig").setup()
+require("mason-lspconfig").setup({
+    ensure_installed = {
+        "gopls",
+        "yamlls",
+        "marksman",
+        "pyright",
+        "black",
+        "pyright",
+        "jsonls",
+        "helm_ls",
+    },
+    function(server_name) -- default handler (optional)
+        require("lspconfig")[server_name].setup {
+            capabilities = capabilities
+        }
+    end,
+})
 
 local lspconfig = require('lspconfig')
 local util = require("lspconfig/util")
@@ -38,9 +61,6 @@ lspconfig.pyright.setup({
   },
 })
 
-lspconfig.jsonls.setup {}
-lspconfig.java_language_server.setup {}
-lspconfig.kotlin_language_server.setup {}
 lspconfig.helm_ls.setup {
     settings = {
         ['helm-ls'] = {
@@ -50,24 +70,19 @@ lspconfig.helm_ls.setup {
         }
     }
 }
-lspconfig.yamlls.setup {}
-lspconfig.gopls.setup {}
--- lspconfig.mypy.setup { settings = { server = "pyright" } }
-lspconfig.marksman.setup {}
-
--- lspconfig.prettier.setup {}
--- use null ls / nvim lint
-
--- lsp.ensure_installed({
--- 'clangd',
--- })
-
--- Fix Undefined global 'vim'
+lspconfig.lua_ls.setup {
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            runtime = { version = "Lua 5.1" },
+            diagnostics = {
+                globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
+            }
+        }
+    }
+}
 
 require("luasnip.loaders.from_vscode").lazy_load()
-local cmp = require('cmp')
--- TODO: https://github.com/neovim/nvim-lspconfig/wiki/Autocompletion
--- local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local cmp_action = lsp.cmp_action()
 cmp.setup({
   snippet = {
