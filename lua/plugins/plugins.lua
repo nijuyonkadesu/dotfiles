@@ -5,13 +5,7 @@ return {
             { 'nvim-lua/plenary.nvim' } 
         }
     },
-    {
-        'rose-pine/neovim',
-        name = 'rose-pine',
-        config = function()
-            vim.cmd('colorscheme rose-pine')
-        end
-    },
+    { 'rose-pine/neovim', name = 'rose-pine' },
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
     { 'ThePrimeagen/harpoon' },
     { 'mbbill/undotree' },
