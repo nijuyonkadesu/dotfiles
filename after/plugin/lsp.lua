@@ -58,8 +58,6 @@ lspconfig.marksman.setup {}
 -- lspconfig.prettier.setup {}
 -- use null ls / nvim lint
 
-lsp.preset("recommended")
-
 -- lsp.ensure_installed({
 -- 'clangd',
 -- })
@@ -70,7 +68,7 @@ require("luasnip.loaders.from_vscode").lazy_load()
 local cmp = require('cmp')
 -- TODO: https://github.com/neovim/nvim-lspconfig/wiki/Autocompletion
 -- local capabilities = require("cmp_nvim_lsp").default_capabilities()
-local cmp_action = require("lsp-zero").cmp_action()
+local cmp_action = lsp.cmp_action()
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -103,14 +101,15 @@ cmp.setup({
 -- disable completion with tab
 -- this helps with copilot setup
 
-lsp.set_preferences({
-    suggest_lsp_servers = false,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
-    }
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = 'E',
+      [vim.diagnostic.severity.WARN] = 'W',
+      [vim.diagnostic.severity.HINT] = 'H',
+      [vim.diagnostic.severity.INFO] = 'I',
+    },
+  },
 })
 
 lsp.on_attach(function(client, bufnr)
