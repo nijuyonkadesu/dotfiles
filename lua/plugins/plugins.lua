@@ -7,7 +7,7 @@ return {
         }
     },
     { 'rose-pine/neovim',                name = 'rose-pine' },
-    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate',  lazy = false },
     { 'ThePrimeagen/harpoon' },
     { 'mbbill/undotree' },
     { 'tpope/vim-fugitive' },
