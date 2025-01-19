@@ -39,6 +39,10 @@ local util = require("lspconfig/util")
 -- https://www.reddit.com/r/neovim/comments/17bod01/how_do_i_select_a_python_enviroment_so_pyright/
 -- https://github.com/hahuang65/nvim-config/blob/38aca9f78b4e773d0452ecb953ccdbe9915ac3d9/lua/plugins/lsp.lua#L82
 lspconfig.basedpyright.setup({
+    on_init = function(client)
+        -- https://github.com/DetachHead/basedpyright/issues/482
+        client.server_capabilities.semanticTokensProvider = nil
+    end,
     root_dir = function(fname)
         local root = util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "app")(fname)
             or util.root_pattern(".git")(fname)
@@ -117,7 +121,7 @@ cmp.setup({
         { name = "luasnip" },
         { name = "path" },
         { name = "nvim_lsp" },
-        { name = "buffer", keyword_length = 3 },
+        { name = "buffer",           keyword_length = 3 },
         { name = "friendly_snippets" }
     },
 })
