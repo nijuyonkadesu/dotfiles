@@ -12,19 +12,21 @@ require("mason-lspconfig").setup({
         "gopls",
         "yamlls",
         "marksman",
-        "pyright",
-        "pyright",
+        "basedpyright",
         "jsonls",
         "helm_ls",
-        -- formatters
-        "black",
-        "prettier",
     },
     function(server_name) -- default handler (optional)
         require("lspconfig")[server_name].setup {
             capabilities = capabilities
         }
     end,
+})
+require("mason-tool-installer").setup({
+    ensure_installed = {
+        "black",
+        "prettier",
+    },
 })
 
 local lspconfig = require('lspconfig')
