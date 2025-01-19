@@ -7,6 +7,12 @@ local capabilities = vim.tbl_deep_extend(
     vim.lsp.protocol.make_client_capabilities(),
     cmp_lsp.default_capabilities())
 require("mason").setup()
+require("mason-tool-installer").setup({
+    ensure_installed = {
+        "black",
+        "prettier",
+    },
+})
 require("mason-lspconfig").setup({
     ensure_installed = {
         "gopls",
@@ -17,17 +23,13 @@ require("mason-lspconfig").setup({
         "helm_ls",
         "lua_ls",
     },
-    function(server_name) -- default handler (optional)
+})
+require("mason-lspconfig").setup_handlers({
+    function(server_name)
         require("lspconfig")[server_name].setup {
             capabilities = capabilities
         }
     end,
-})
-require("mason-tool-installer").setup({
-    ensure_installed = {
-        "black",
-        "prettier",
-    },
 })
 
 local lspconfig = require('lspconfig')
