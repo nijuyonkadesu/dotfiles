@@ -7,11 +7,12 @@ return {
         }
     },
     { 'rose-pine/neovim',                name = 'rose-pine' },
-    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate', lazy = false },
+    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate',   lazy = false },
     { 'ThePrimeagen/harpoon' },
     { 'mbbill/undotree' },
     { 'github/copilot.vim' },
     { 'tpope/vim-fugitive' },
+    { 'windwp/nvim-autopairs',           event = 'InsertEnter', config = true, opts = { disable_in_visualblock = true, } },
     {
         'towolf/vim-helm',
         ft = { 'helm' },
