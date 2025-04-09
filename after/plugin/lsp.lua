@@ -48,7 +48,7 @@ lspconfig.basedpyright.setup({
     root_dir = function(fname)
         local root = util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "app")(fname)
             or util.root_pattern(".git")(fname)
-            or util.fs.dirname(fname)
+            or util.path.dirname(fname)
 
         local venv_dir = root .. 'venv'
         if util.path.exists(venv_dir) then

@@ -41,7 +41,7 @@ return {
 
             -- linters, formatters
             { 'nvim-lua/plenary.nvim' },
-            { 'jose-elias-alvarez/null-ls.nvim' },
+            { 'stevearc/conform.nvim',                    opts = {}, },
 
             -- Autocompletion
             { 'hrsh7th/nvim-cmp' },

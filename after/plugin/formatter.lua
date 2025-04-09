@@ -1,10 +1,11 @@
-local null_ls = require("null-ls")
-
-null_ls.setup({
-    sources = {
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.prettier.with({
-            filetypes = { "html", "json", "yaml", "markdown", "vue" },
-        }),
+require("conform").setup({
+    formatters_by_ft = {
+        lua = { "stylua" },
+        -- Conform will run multiple formatters sequentially
+        python = { "black", "isort" },
+        -- You can customize some of the format options for the filetype (:help conform.format)
+        rust = { "rustfmt", lsp_format = "fallback" },
+        -- Conform will run the first available formatter
+        javascript = { "prettierd", "prettier", stop_after_first = true },
     },
 })
