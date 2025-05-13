@@ -12,7 +12,7 @@ return {
     { 'mbbill/undotree' },
     { 'github/copilot.vim' },
     { 'tpope/vim-fugitive' },
-    { 'windwp/nvim-autopairs',           event = 'InsertEnter', config = true, opts = { disable_in_visualblock = true, } },
+--    { 'windwp/nvim-autopairs',           event = 'InsertEnter', config = true, opts = { disable_in_visualblock = true, } },
     {
         'towolf/vim-helm',
         ft = { 'helm' },
