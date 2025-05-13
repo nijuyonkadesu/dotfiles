@@ -27,6 +27,10 @@ vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
+-- windo diff
+vim.keymap.set("n", "<leader>wt", "[[:windo difft<CR>]]")
+vim.keymap.set("n", "<leader>wo", "[[:windo diffo<CR>]]")
+
 -- lsp format
 -- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>f", function()
@@ -37,6 +41,12 @@ vim.keymap.set("n", "<leader>f", function()
     timeout_ms = 500,
   })
 end)
+
+-- quickfix navigation ref: https://www.youtube.com/watch?v=wOdL2T4hANk
+-- macos_option_as_alt right (in kitty conf)
+-- :cdo s/match/sub/gc
+vim.keymap.set("n", "<M-j>", "<cmd>cn<CR>zz")
+vim.keymap.set("n", "<M-k>", "<cmd>cp<CR>zz")
 
 -- go err
 vim.keymap.set(
