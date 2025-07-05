@@ -18,7 +18,7 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
 -- System clipboard
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 
 vim.keymap.set("n", "Q", "<nop>")
@@ -34,12 +34,12 @@ vim.keymap.set("n", "<leader>wo", "[[:windo diffo<CR>]]")
 -- lsp format
 -- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>f", function()
-  local conform = require("conform")
-  conform.format({
-    lsp_fallback = true,
-    async = true,
-    timeout_ms = 500,
-  })
+    local conform = require("conform")
+    conform.format({
+        lsp_fallback = true,
+        async = true,
+        timeout_ms = 500,
+    })
 end)
 
 -- quickfix navigation ref: https://www.youtube.com/watch?v=wOdL2T4hANk
@@ -55,9 +55,15 @@ vim.keymap.set(
     "oif err != nil {<CR>}<Esc>Oreturn err<Esc>"
 )
 
--- cleans up incorrect json (python dict) 
+-- cleans up incorrect json (python dict)
 vim.keymap.set("v", "<leader>j", function()
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local start_pos = vim.fn.getpos('v')
+    local end_pos = vim.fn.getpos('.')
+
+    local start_line = start_pos[2] - 1
+    local end_line = end_pos[2]
+
+    local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
     local content = table.concat(lines, "\n")
 
     local tmp_file = os.tmpname()
@@ -67,8 +73,7 @@ vim.keymap.set("v", "<leader>j", function()
 
     local python_cmd = string.format([[
 python3 -c "
-import json
-import ast
+import json, ast
 
 with open('%s', 'r') as f:
     content = f.read()
@@ -83,18 +88,22 @@ with open('%s', 'w') as f:
 "
     ]], tmp_file, tmp_file)
 
-    os.execute(python_cmd)
+    local code = os.execute(python_cmd)
 
-    f = io.open(tmp_file, "r")
-    content = f:read("*all")
-    f:close()
+    if code == 0 then
+        f = io.open(tmp_file, "r")
+        local content = f:read("*all")
+        f:close()
+        os.remove(tmp_file)
 
-    os.remove(tmp_file)
+        local new_lines = vim.split(content, "\n", { plain = true })
+        vim.api.nvim_buf_set_lines(0, start_line, end_line, false, new_lines)
+    else
+        vim.notify("skill issue.", vim.log.levels.ERROR)
+    end
+end, { desc = "Format JSON/python dict in visual selection" })
 
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(content, "\n"))
-end)
 vim.keymap.set("v", "<leader>q", "!jq ")
 
 -- replace new line with actual newline character
 vim.keymap.set("v", "<leader>nl", '%s/\\n/')
-
