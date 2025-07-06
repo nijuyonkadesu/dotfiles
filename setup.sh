@@ -7,19 +7,21 @@ if [[ "$answer" != "y" && "$answer" != "Y" ]]; then
     exit 1
 fi
 
-echo "creating symlink for tmux-sessionizer..."
+echo "01. creating symlink for tmux-sessionizer..."
 ln -s $(pwd)/bin/tmux-sessionizer ~/.local/bin/tmux-sessionizer
 
-echo "linking tmux config directory..."
+echo "02. linking tmux config directory..."
 ln -s $(pwd)/config/tmux ~/.config/tmux
 
-echo "linking nvim config directory..."
+echo "03. linking nvim config directory..."
 ln -s $(pwd)/config/nvim ~/.config/
 
-echo "backing up existing .bashrc and linking new one..."
+echo "04. linking kitty config directory..."
+ln -s $(pwd)/config/kitty ~/.config/
+
+echo "05. backing up existing .bashrc and linking new one..."
 cp ~/.bashrc ~/.bashrc.bck && \
     ln -sf $(pwd)/home/.bashrc ~/.bashrc
 
 echo "done."
 
-# TODO: kitty configuration from work lap
