@@ -7,12 +7,11 @@ return {
         }
     },
     { 'rose-pine/neovim',                name = 'rose-pine' },
-    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate',   lazy = false },
+    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate', lazy = false },
     { 'ThePrimeagen/harpoon' },
     { 'mbbill/undotree' },
     { 'github/copilot.vim' },
     { 'tpope/vim-fugitive' },
---    { 'windwp/nvim-autopairs',           event = 'InsertEnter', config = true, opts = { disable_in_visualblock = true, } },
     {
         'towolf/vim-helm',
         ft = { 'helm' },
@@ -52,12 +51,19 @@ return {
             { 'hrsh7th/cmp-nvim-lua' },
 
             -- Snippets
+            { 'rafamadriz/friendly-snippets' },
             {
                 'L3MON4D3/LuaSnip',
                 build = "make install_jsregexp",
                 dependencies = { "rafamadriz/friendly-snippets" },
             },
-            { 'rafamadriz/friendly-snippets' },
+            {
+                'MeanderingProgrammer/render-markdown.nvim',
+                dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' },
+                ---@module 'render-markdown'
+                ---@type render.md.UserConfig
+                opts = {},
+            }
         }
     }
 }
