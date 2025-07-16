@@ -116,6 +116,7 @@ fi
 
 export EDITOR=nvim
 export MANPAGER="nvim +Man!"
+export PATH=~/go/bin:$PATH
 
 alias tmuxs=~/.local/bin/tmux-sessionizer
 alias t=tmuxs
@@ -135,3 +136,6 @@ alias glgraph='git log --graph --oneline --all --simplify-by-decoration'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Generated for envman. Do not edit. (ughh - it's from boot dev)
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
