@@ -19,7 +19,10 @@ ln -s $(pwd)/config/nvim ~/.config/
 echo "04. linking kitty config directory..."
 ln -s $(pwd)/config/kitty ~/.config/
 
-echo "05. backing up existing .bashrc and linking new one..."
+echo "05. linking mpv config directory..."
+ln -s $(pwd)/config/mpv ~/.config/
+
+echo "06. backing up existing .bashrc and linking new one..."
 cp ~/.bashrc ~/.bashrc.bck && \
     ln -sf $(pwd)/home/.bashrc ~/.bashrc
 
