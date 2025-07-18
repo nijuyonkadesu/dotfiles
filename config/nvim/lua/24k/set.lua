@@ -43,6 +43,4 @@ vim.g.clipboard = {
 
 -- netrw works only on the current buffer, so operations like move / copy may not work as you might expect. 
 -- ref: https://vonheikemen.github.io/devlog/tools/using-netrw-vim-builtin-file-explorer/
-vim.g.netrw_keepdir = 0
 vim.g.netrw_winsize = 30
-vim.g.netrw_localcopydircmd = 'cp -r'
