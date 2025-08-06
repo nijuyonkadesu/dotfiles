@@ -13,6 +13,6 @@ local function toggle_hwdec_and_audio()
     mp.osd_message("hwdec: " .. new_hwdec .. " | audio-exclusive: " .. tostring(new_audio))
 end
 
-mp.add_key_binding("h", "toggle-hwdec-audio-exclusive", toggle_hwdec_and_audio)
+mp.add_key_binding("ctrl+h", "toggle-hwdec-audio-exclusive", toggle_hwdec_and_audio)
 
 

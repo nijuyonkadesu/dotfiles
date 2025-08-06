@@ -123,6 +123,7 @@ alias t=tmuxs
 alias rcreload="source ~/.bashrc"
 alias timef='/usr/bin/time -f "Memory used (kB): %M\nUser time (seconds): %U"'
 alias llm='tgpt -m'
+alias gemini='tgpt --model "gemini-2.5-flash" --key $AI_KEY -m --provider gemini'
 alias less='nvim \+":setlocal buftype=nofile" -'
 alias docker=podman
 alias activate="source venv/bin/activate"
@@ -139,3 +140,5 @@ export NVM_DIR="$HOME/.nvm"
 
 # Generated for envman. Do not edit. (ughh - it's from boot dev)
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+[ -s "$HOME/apikeys.sh" ] && source "$HOME/apikeys.sh"
