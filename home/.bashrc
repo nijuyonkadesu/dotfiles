@@ -141,4 +141,4 @@ export NVM_DIR="$HOME/.nvm"
 # Generated for envman. Do not edit. (ughh - it's from boot dev)
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-[ -s "$HOME/apikeys.sh" ] && source "$HOME/apikeys.sh"
+[ -s "$HOME/.creds/apikeys.sh" ] && source "$HOME/.creds/apikeys.sh"

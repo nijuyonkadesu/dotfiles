@@ -107,3 +107,14 @@ vim.keymap.set("v", "<leader>q", "!jq ")
 
 -- replace new line with actual newline character
 vim.keymap.set("v", "<leader>nl", '%s/\\n/')
+
+-- toggle wrap text
+vim.keymap.set("n", "<leader>l", function()
+  if vim.wo.wrap then
+    vim.wo.wrap = false
+    vim.wo.linebreak = false
+  else
+    vim.wo.wrap = true
+    vim.wo.linebreak = true
+  end
+end, { desc = "toggle wrap+linebreak" })
