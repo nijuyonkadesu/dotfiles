@@ -68,8 +68,13 @@ return {
                     settings = {
                         Lua = {
                             diagnostics = {
-                                globals = { "vim" }
+                                globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
                             },
+                            workspace = {
+                                library = vim.api.nvim_get_runtime_file("", true),
+                                checkThirdParty = false,
+                            },
+                            runtime = { version = "Lua 5.1" },
                             format = {
                                 enable = true,
                                 -- Put format options here
@@ -110,6 +115,7 @@ return {
 
                     --    return root
                     --end,
+                    capabilities = capabilities,
                     settings = {
                         python = {
                             pythonPath = vim.g.python3_host_prog,
@@ -131,6 +137,7 @@ return {
                 }),
 
                 vim.lsp.config("helm_ls", {
+                    capabilities = capabilities,
                     settings = {
                         ['helm-ls'] = {
                             yamlls = {
@@ -142,8 +149,6 @@ return {
 
             })
 
-            require("luasnip.loaders.from_vscode").lazy_load()
-            local cmp_select = { behavior = cmp.SelectBehavior.Select }
             cmp.setup({
                 snippet = {
                     expand = function(args)
@@ -151,8 +156,8 @@ return {
                     end,
                 },
                 mapping = cmp.mapping.preset.insert({
-                    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-                    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+                    ['<C-p>'] = cmp.mapping.select_prev_item(),
+                    ['<C-n>'] = cmp.mapping.select_next_item(),
                     ['<C-y>'] = cmp.mapping.confirm({ select = true }),
                     ['<C-Space>'] = cmp.mapping.complete(),
                     ['<CR>'] = cmp.mapping.confirm({
