@@ -30,7 +30,6 @@ return {
             { 'j-hui/fidget.nvim' }
         },
         config = function()
-
             local cmp = require('cmp')
             local cmp_lsp = require("cmp_nvim_lsp")
             local capabilities = vim.tbl_deep_extend(
@@ -42,6 +41,7 @@ return {
             require("fidget").setup({})
             require("mason").setup()
             require("mason-lspconfig").setup({
+                automatic_enable = true,
                 automatic_installation = {
                     "black",
                     "prettier",
@@ -57,97 +57,89 @@ return {
                 },
                 handlers = {
                     function(server_name)
-                        require("lspconfig")[server_name].setup {
+                        vim.lsp.config(server_name, {
                             capabilities = capabilities
-                        }
-                    end,
-
-                    ["lua_ls"] = function()
-                        local lspconfig = require("lspconfig")
-                        lspconfig.lua_ls.setup {
-                            capabilities = capabilities,
-                            settings = {
-                                Lua = {
-                                    format = {
-                                        enable = true,
-                                        -- Put format options here
-                                        -- NOTE: the value should be STRING!!
-                                        defaultConfig = {
-                                            indent_style = "space",
-                                            indent_size = "2",
-                                        }
-                                    },
-                                }
-                            }
-                        }
-                    end,
-
-                    ["tailwindcss"] = function()
-                        local lspconfig = require("lspconfig")
-                        lspconfig.tailwindcss.setup({
-                            capabilities = capabilities,
-                            filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte", "heex" },
                         })
                     end,
+                },
 
-                    ["basedpyright"] = function()
-                        local lspconfig = require('lspconfig')
-                        local util = require("lspconfig/util")
-                        -- https://www.reddit.com/r/neovim/comments/17bod01/how_do_i_select_a_python_enviroment_so_pyright/
-                        -- https://github.com/hahuang65/nvim-config/blob/38aca9f78b4e773d0452ecb953ccdbe9915ac3d9/lua/plugins/lsp.lua#L82
-                        lspconfig.basedpyright.setup({
-                            on_init = function(client)
-                                -- https://github.com/DetachHead/basedpyright/issues/482
-                                client.server_capabilities.semanticTokensProvider = nil
-                            end,
-                            root_dir = function(fname)
-                                local root = util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "app")(
-                                        fname)
-                                    or util.root_pattern(".git")(fname)
-                                    or util.path.dirname(fname)
-
-                                local venv_dir = root .. 'venv'
-                                if util.path.exists(venv_dir) then
-                                    vim.g.python3_host_prog = venv_dir .. '/bin/python'
-                                end
-
-                                return root
-                            end,
-                            capabilities = capabilities,
-                            settings = {
-                                python = {
-                                    pythonPath = vim.g.python3_host_prog,
-                                    analysis = {
-                                        autoSearchPaths = true,
-                                        useLibraryCodeForTypes = true,
-                                        diagnosticMode = "workspace",
-                                        extraPaths = dofile(vim.fn.stdpath('config') .. "/after/extra-paths.lua"),
-                                    },
-                                },
-                                basedpyright = {
-                                    -- https://github.com/DetachHead/basedpyright/issues/168
-                                    analysis = {
-                                        typeCheckingMode = "standard",
-                                        reportMissingSuperCall = false,
-                                    },
-                                },
+                vim.lsp.config("lua_ls", {
+                    capabilities = capabilities,
+                    settings = {
+                        Lua = {
+                            diagnostics = {
+                                globals = { "vim" }
                             },
-                        })
-                    end,
-
-                    ["helm_ls"] = function()
-                        local lspconfig = require('lspconfig')
-                        lspconfig.helm_ls.setup {
-                            settings = {
-                                ['helm-ls'] = {
-                                    yamlls = {
-                                        path = "yaml-language-server",
-                                    }
+                            format = {
+                                enable = true,
+                                -- Put format options here
+                                -- NOTE: the value should be STRING!!
+                                defaultConfig = {
+                                    indent_style = "space",
+                                    indent_size = "2",
                                 }
+                            },
+                        }
+                    }
+                }),
+
+                vim.lsp.config("tailwindcss", {
+                    capabilities = capabilities,
+                    filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte", "heex" },
+                }),
+
+                vim.lsp.config("basedpyright", {
+                    --local lspconfig = require('lspconfig')
+                    --local util = require("lspconfig/util")
+                    ---- https://www.reddit.com/r/neovim/comments/17bod01/how_do_i_select_a_python_enviroment_so_pyright/
+                    ---- https://github.com/hahuang65/nvim-config/blob/38aca9f78b4e773d0452ecb953ccdbe9915ac3d9/lua/plugins/lsp.lua#L82
+                    --on_init = function(client)
+                    --    -- https://github.com/DetachHead/basedpyright/issues/482
+                    --    client.server_capabilities.semanticTokensProvider = nil
+                    --end,
+                    --root_dir = function(fname)
+                    --    local root = util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "app")(
+                    --            fname)
+                    --        or util.root_pattern(".git")(fname)
+                    --        or util.path.dirname(fname)
+
+                    --    local venv_dir = root .. 'venv'
+                    --    if util.path.exists(venv_dir) then
+                    --        vim.g.python3_host_prog = venv_dir .. '/bin/python'
+                    --    end
+
+                    --    return root
+                    --end,
+                    settings = {
+                        python = {
+                            pythonPath = vim.g.python3_host_prog,
+                            analysis = {
+                                autoSearchPaths = true,
+                                useLibraryCodeForTypes = true,
+                                diagnosticMode = "workspace",
+                                extraPaths = dofile(vim.fn.stdpath('config') .. "/after/extra-paths.lua"),
+                            },
+                        },
+                        basedpyright = {
+                            -- https://github.com/DetachHead/basedpyright/issues/168
+                            analysis = {
+                                typeCheckingMode = "standard",
+                                reportMissingSuperCall = false,
+                            },
+                        },
+                    },
+                }),
+
+                vim.lsp.config("helm_ls", {
+                    settings = {
+                        ['helm-ls'] = {
+                            yamlls = {
+                                path = "yaml-language-server",
                             }
                         }
-                    end,
-                }
+                    }
+                })
+
             })
 
             require("luasnip.loaders.from_vscode").lazy_load()
