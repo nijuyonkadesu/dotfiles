@@ -30,15 +30,6 @@ return {
             { 'j-hui/fidget.nvim' }
         },
         config = function()
-            require("conform").setup({
-                formatters_by_ft = {
-                    lua = { "stylua" },
-                    python = { "black" },
-                    rust = { "rustfmt", lsp_format = "fallback" },
-                    javascript = { "prettierd", "prettier", stop_after_first = true },
-                    markdown = { "prettierd", "prettier", stop_after_first = true },
-                },
-            })
 
             local cmp = require('cmp')
             local cmp_lsp = require("cmp_nvim_lsp")

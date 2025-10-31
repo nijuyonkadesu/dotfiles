@@ -31,17 +31,6 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 vim.keymap.set("n", "<leader>wt", "[[:windo difft<CR>]]")
 vim.keymap.set("n", "<leader>wo", "[[:windo diffo<CR>]]")
 
--- lsp format
--- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
-vim.keymap.set("n", "<leader>f", function()
-    local conform = require("conform")
-    conform.format({
-        lsp_fallback = true,
-        async = true,
-        timeout_ms = 500,
-    })
-end)
-
 -- quickfix navigation ref: https://www.youtube.com/watch?v=wOdL2T4hANk
 -- macos_option_as_alt right (in kitty conf)
 -- :cdo s/match/sub/gc
