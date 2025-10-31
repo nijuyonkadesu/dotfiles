@@ -9,7 +9,6 @@ return {
         dependencies = {
             { 'williamboman/mason.nvim' },
             { 'williamboman/mason-lspconfig.nvim' },
-            -- { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
 
             -- linters, formatters
             { 'nvim-lua/plenary.nvim' },
@@ -25,12 +24,8 @@ return {
             { 'saadparwaiz1/cmp_luasnip' },
 
             -- Snippets
-            { 'rafamadriz/friendly-snippets' },
-            {
-                'L3MON4D3/LuaSnip',
-                build = "make install_jsregexp",
-                dependencies = { "rafamadriz/friendly-snippets" },
-            },
+            { 'L3MON4D3/LuaSnip' },
+
             -- UI notification
             { 'j-hui/fidget.nvim' }
         },
@@ -55,12 +50,6 @@ return {
 
             require("fidget").setup({})
             require("mason").setup()
-            -- require("mason-tool-installer").setup({
-            --     ensure_installed = {
-            --         "black",
-            --         "prettier",
-            --     },
-            -- })
             require("mason-lspconfig").setup({
                 automatic_installation = {
                     "black",
@@ -167,8 +156,8 @@ return {
                 }
             })
 
+            require("luasnip.loaders.from_vscode").lazy_load()
             local cmp_select = { behavior = cmp.SelectBehavior.Select }
-            -- local cmp_action = lsp.cmp_action()
             cmp.setup({
                 snippet = {
                     expand = function(args)
@@ -180,8 +169,6 @@ return {
                     ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
                     ['<C-y>'] = cmp.mapping.confirm({ select = true }),
                     ['<C-Space>'] = cmp.mapping.complete(),
-                    -- ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-                    -- ['<C-b>'] = cmp_action.luasnip_jump_backward(),
                     ['<CR>'] = cmp.mapping.confirm({
                         behavior = cmp.ConfirmBehavior.Replace,
                         select = true,
@@ -190,13 +177,14 @@ return {
                     ['<S-Tab>'] = nil,
 
                 }),
-                sources = {
+                sources = cmp.config.sources({
                     { name = "luasnip" },
-                    { name = "path" },
                     { name = "nvim_lsp" },
-                    { name = "buffer",           keyword_length = 3 },
-                    { name = "friendly_snippets" }
-                },
+                    { name = "friendly_snippets" },
+                }, {
+                    { name = "path" },
+                    { name = "buffer", keyword_length = 3 },
+                }),
             })
 
             vim.diagnostic.config({

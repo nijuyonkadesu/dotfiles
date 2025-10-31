@@ -5,7 +5,7 @@ return {
     setup = function()
         require("render-markdown").setup({
             code = {
-                disable_background = true,
+                disable_background = { 'diff' },
             },
         })
     end
