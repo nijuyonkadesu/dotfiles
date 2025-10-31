@@ -113,6 +113,7 @@ return {
 
                                 return root
                             end,
+                            capabilities = capabilities,
                             settings = {
                                 python = {
                                     pythonPath = vim.g.python3_host_prog,
