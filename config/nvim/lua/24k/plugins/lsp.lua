@@ -125,8 +125,10 @@ return {
                                 },
                                 basedpyright = {
                                     -- https://github.com/DetachHead/basedpyright/issues/168
-                                    typeCheckingMode = "standard",
-                                    reportMissingSuperCall = false,
+                                    analysis = {
+                                        typeCheckingMode = "standard",
+                                        reportMissingSuperCall = false,
+                                    },
                                 },
                             },
                         })
