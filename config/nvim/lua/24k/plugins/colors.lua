@@ -24,6 +24,36 @@ return {
         end
     },
     {
+        "ellisonleao/gruvbox.nvim",
+        name = "gruvbox",
+        config = function()
+            require("gruvbox").setup({
+                terminal_colors = true, -- add neovim terminal colors
+                undercurl = true,
+                underline = false,
+                bold = true,
+                italic = {
+                    strings = false,
+                    emphasis = false,
+                    comments = false,
+                    operators = false,
+                    folds = false,
+                },
+                strikethrough = true,
+                invert_selection = false,
+                invert_signs = false,
+                invert_tabline = false,
+                invert_intend_guides = false,
+                inverse = true, -- invert background for search, diffs, statuslines and errors
+                contrast = "",  -- can be "hard", "soft" or empty string
+                palette_overrides = {},
+                overrides = {},
+                dim_inactive = false,
+                transparent_mode = false,
+            })
+        end,
+    },
+    {
         "folke/tokyonight.nvim",
         config = function()
             require("tokyonight").setup({
@@ -43,5 +73,40 @@ return {
                 },
             })
         end
+    },
+    {
+        "tjdevries/colorbuddy.nvim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            vim.cmd.colorscheme "gruvbuddy"
+        end,
+    },
+    "tckmn/hotdog.vim", -- TROLL!??
+    "craftzdog/solarized-osaka.nvim",
+    "miikanissi/modus-themes.nvim",
+    "rebelot/kanagawa.nvim",
+    { "catppuccin/nvim", name = "catppuccin" },
+
+    "dundargoc/fakedonalds.nvim",
+    "eldritch-theme/eldritch.nvim",
+    "jesseleite/nvim-noirbuddy",
+    "gremble0/yellowbeans.nvim",
+    "rockyzhang24/arctic.nvim",
+    "Shatur/neovim-ayu",
+    "RRethy/base16-nvim",
+    "xero/miasma.nvim",
+    "cocopon/iceberg.vim",
+    "kepano/flexoki-neovim",
+    "LuRsT/austere.vim",
+    "ricardoraposo/gruvbox-minor.nvim",
+    "NTBBloodbath/sweetie.nvim",
+    "vim-scripts/MountainDew.vim",
+    {
+        "maxmx03/fluoromachine.nvim",
+        config = function()
+            local fm = require "fluoromachine"
+            fm.setup { glow = true, theme = "fluoromachine" }
+        end,
     },
 }
