@@ -9,6 +9,7 @@ return {
         local ls = require("luasnip")
         ls.filetype_extend("javascript", { "jsdoc" })
 
+        -- taken from lsp-zero! original method: cmp_action.luasnip_jump_forward()
         vim.keymap.set({ "i", "s" }, "<C-f>", function()
             if ls.locally_jumpable(1) then
                 ls.jump(1)

@@ -41,8 +41,9 @@ run `:checkhealth` and install dependencies if possible. In my case, I installed
 
 ### Source of Information
 
-Watch this beautiful [vim rc](https://youtu.be/w7i4amO_zaE) video from [@ThePrimeagen](https://github.com/ThePrimeagen).
-[init.lua](https://github.com/ThePrimeagen/init.lua)
+**Watch this beautiful [vim rc](https://youtu.be/w7i4amO_zaE) video from [@ThePrimeagen](https://github.com/ThePrimeagen)**.
+- thanks to [ThePrimeagen's init.lua](https://github.com/ThePrimeagen/init.lua)
+- thanks to [tjdevris's config.nvim](https://github.com/ThePrimeagen/init.lua) 
 
 ## 2. tmux + tmux sessionizer
 
