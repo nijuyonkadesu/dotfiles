@@ -15,9 +15,9 @@ return {
         config = function()
             require('rose-pine').setup({
                 disable_background = true,
-                styles = {
-                    italic = false,
-                },
+                -- styles = {
+                --     italic = false,
+                -- },
             })
 
             ColorMyPencils();
@@ -32,13 +32,13 @@ return {
                 undercurl = true,
                 underline = false,
                 bold = true,
-                italic = {
-                    strings = false,
-                    emphasis = false,
-                    comments = false,
-                    operators = false,
-                    folds = false,
-                },
+                -- italic = {
+                --     strings = false,
+                --     emphasis = false,
+                --     comments = false,
+                --     operators = false,
+                --     folds = false,
+                -- },
                 strikethrough = true,
                 invert_selection = false,
                 invert_signs = false,
