@@ -117,20 +117,15 @@ return {
                     --end,
                     capabilities = capabilities,
                     settings = {
-                        python = {
-                            pythonPath = vim.g.python3_host_prog,
-                            analysis = {
-                                autoSearchPaths = true,
-                                useLibraryCodeForTypes = true,
-                                diagnosticMode = "workspace",
-                                extraPaths = dofile(vim.fn.stdpath('config') .. "/after/extra-paths.lua"),
-                            },
-                        },
                         basedpyright = {
                             -- https://github.com/DetachHead/basedpyright/issues/168
                             analysis = {
                                 typeCheckingMode = "standard",
                                 reportMissingSuperCall = false,
+                                autoSearchPaths = true,
+                                diagnosticMode = "workspace",
+                                extraPaths = dofile(vim.fn.stdpath('config') .. "/after/extra-paths.lua"),
+                                exclude = { "**/node_modules/**", "**/__pycache__" },
                             },
                         },
                     },
