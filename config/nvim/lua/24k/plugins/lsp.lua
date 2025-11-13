@@ -119,11 +119,11 @@ return {
                     settings = {
                         basedpyright = {
                             -- https://github.com/DetachHead/basedpyright/issues/168
+                            openFilesOnly = true,
                             analysis = {
                                 typeCheckingMode = "standard",
                                 reportMissingSuperCall = false,
                                 autoSearchPaths = true,
-                                diagnosticMode = "workspace",
                                 extraPaths = dofile(vim.fn.stdpath('config') .. "/after/extra-paths.lua"),
                                 exclude = { "**/node_modules/**", "**/__pycache__" },
                             },
