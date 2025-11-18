@@ -8,6 +8,7 @@ return {
             vim.keymap.set("n", "<leader>gh", ":0Gclog<CR>", { desc = "Git file history" })
             vim.keymap.set("n", "<leader>gb", ":Git blame<CR>", { desc = "Git blame" })
             vim.keymap.set("n", "<leader>gl", ":Git log --oneline --graph<CR>", { desc = "Git log" })
+            vim.keymap.set("n", "<leader>go", ":GBrowse!<CR>", { desc = "Yank github url" })
 
             vim.keymap.set("n", "<leader>gp", function()
                 local branch = vim.fn.FugitiveHead()
@@ -27,8 +28,5 @@ return {
         dependencies = {
             "tpope/vim-fugitive",
         },
-        setup = function()
-            vim.keymap.set("n", "<leader>go", ":GBrowse!<CR>", { desc = "Yank github url" })
-        end
     }
 }
