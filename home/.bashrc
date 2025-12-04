@@ -130,6 +130,7 @@ alias activate="source venv/bin/activate"
 alias makevenv="python -m venv venv"
 alias i="ipython"
 alias nvconf="cd ~/.config/nvim && nvim ."
+alias caffinate-systemd='systemd-inhibit --what=idle:sleep:shutdown sleep infinity'
 
 # Git Tricks
 alias glgraph='git log --graph --oneline --all --simplify-by-decoration'
