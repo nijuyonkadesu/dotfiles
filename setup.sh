@@ -23,6 +23,7 @@ echo "05. linking mpv config directory..."
 ln -s $(pwd)/config/mpv ~/.config/
 
 echo "06. backing up existing .bashrc and linking new one..."
+# TODO: make this better by appending date to the backup file
 BACKUP_FILE="${HOME}/.bashrc.bck"
 if [ ! -f "${BACKUP_FILE}" ]; then
     if [ -f ~/.bashrc ]; then
@@ -47,3 +48,5 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "done."
+
+# TODO: add wireplumber and pipewire to the setup copy list
