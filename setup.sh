@@ -40,13 +40,10 @@ else
     echo "Backup file ${BACKUP_FILE} already exists. Skipping backup."
 fi
 
-echo "Linking new .bashrc from $(pwd)/home/.bashrc to ~/.bashrc"
-ln -sf "$(pwd)/home/.bashrc" ~/.bashrc
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to link new .bashrc. Aborting."
-    exit 1
-fi
+echo "07 creating symlink for define..."
+ln -s $(pwd)/bin/define ~/.local/bin/define
 
 echo "done."
 
 # TODO: add wireplumber and pipewire to the setup copy list
+# TODO: need better linking process
