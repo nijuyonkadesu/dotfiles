@@ -38,6 +38,7 @@ All you needed to upscale your vanilla neovim to the Gigachad neovim
 ### Tips
 
 run `:checkhealth` and install dependencies if possible. In my case, I installed **ripgrep** and **fd**.
+2026-03-31 - run `npm install -g tree-sitter-cli` for treesitter to work.
 
 ### Source of Information
 
