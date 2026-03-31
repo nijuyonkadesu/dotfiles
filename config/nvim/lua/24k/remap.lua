@@ -37,6 +37,10 @@ vim.keymap.set("n", "<leader>wo", "[[:windo diffo<CR>]]")
 vim.keymap.set("n", "<M-j>", "<cmd>cn<CR>zz")
 vim.keymap.set("n", "<M-k>", "<cmd>cp<CR>zz")
 
+-- location list navigation
+vim.keymap.set('n', '<M-i>', ':lnext<CR>zz', {})
+vim.keymap.set('n', '<M-o>', ':lprev<CR>zz', {})
+
 -- go err
 vim.keymap.set(
     "n",
