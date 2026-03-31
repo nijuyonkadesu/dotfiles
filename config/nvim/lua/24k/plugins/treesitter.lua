@@ -48,7 +48,7 @@ return {
             }
 
             require('nvim-treesitter').install({
-                'c', 'lua', 'rust', 'cpp', 'go', 'javascript', 'typescript', 'python', 'yaml'
+                'c', 'lua', 'rust', 'cpp', 'go', 'javascript', 'typescript', 'python', 'yaml', 'json'
             })
         end
     },
