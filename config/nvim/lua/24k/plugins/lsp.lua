@@ -54,6 +54,7 @@ return {
                     "jsonls",
                     "helm_ls",
                     "lua_ls",
+                    "jdtls",
                 },
                 handlers = {
                     function(server_name)
