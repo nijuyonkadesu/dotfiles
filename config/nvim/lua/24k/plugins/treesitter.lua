@@ -11,9 +11,12 @@ vim.api.nvim_create_autocmd('User', {
     end,
 })
 
+-- :h treesitter-quickstart and the nvim-treesitter main README (https://github.com/nvim-treesitter/nvim-treesitter/tree/main#quickstart) both spell this out:
+-- > The main branch only handles installing/updating parsers and queries. To enable highlighting, indents, or folds for a buffer, you have to call vim.treesitter.start() yourself (typically from a FileType autocmd).
+-- sike... thanks, claude for fixing helm lsp & broken gitcommit colors
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = { 'c', 'lua', 'rust', 'cpp', 'go', 'javascript', 'typescript', 'python', 'yaml', 'templ', 'markdown', 'json', 'java' },
     callback = function()
+        -- Files larger than 100 KB still skip treesitter for perf.
         local max_filesize = 100 * 1024 -- 100KB
         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(0))
         if ok and stats and stats.size > max_filesize then
@@ -24,14 +27,9 @@ vim.api.nvim_create_autocmd('FileType', {
             )
             return
         end
-        vim.treesitter.start()
-    end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-    pattern = 'templ',
-    callback = function()
-        vim.treesitter.start()
+        -- not specifying pattern fires treesitter for all buffers. ig this is how it was prior to 0.12.0 neovim
+        -- pcall silently eats error message from treesitter whn no parser are installed
+        pcall(vim.treesitter.start)
     end,
 })
 
@@ -47,8 +45,14 @@ return {
                 install_dir = vim.fn.stdpath('data') .. '/site'
             }
 
+            -- Parsers to keep installed/updated. The auto-attach autocmd above
+            -- will pick up anything in this list (and anything you `:TSInstall`
+            -- ad-hoc) without further config changes.
             require('nvim-treesitter').install({
-                'c', 'lua', 'rust', 'cpp', 'go', 'javascript', 'typescript', 'python', 'yaml', 'json'
+                'c', 'lua', 'rust', 'cpp', 'go', 'javascript', 'typescript',
+                'python', 'yaml', 'json', 'helm', 'gitcommit', 'templ',
+                'markdown', 'markdown_inline', 'java', 'bash', 'vim', 'vimdoc',
+                'query', 'toml', 'dockerfile', 'html', 'css',
             })
         end
     },
