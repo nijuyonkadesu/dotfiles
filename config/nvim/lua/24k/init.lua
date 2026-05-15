@@ -2,6 +2,21 @@ require("24k.remap")
 require("24k.set")
 require("24k.lazy")
 
+-- automatically detect filetypes like log / conf etc
+vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
+    callback = function(ev)
+        vim.schedule(function()
+            if not vim.api.nvim_buf_is_valid(ev.buf) then return end
+            if vim.bo[ev.buf].buftype ~= '' then return end
+            if vim.bo[ev.buf].filetype ~= '' then return end
+            local name = vim.api.nvim_buf_get_name(ev.buf)
+            local ext = vim.fn.fnamemodify(name, ':e')
+            if ext == '' then return end
+            vim.bo[ev.buf].filetype = ext:lower()
+        end)
+    end,
+})
+
 local augroup = vim.api.nvim_create_augroup
 local LspGroup = augroup('LspGroup', {})
 local autocmd = vim.api.nvim_create_autocmd

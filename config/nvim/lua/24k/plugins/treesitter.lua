@@ -45,14 +45,11 @@ return {
                 install_dir = vim.fn.stdpath('data') .. '/site'
             }
 
-            -- Parsers to keep installed/updated. The auto-attach autocmd above
-            -- will pick up anything in this list (and anything you `:TSInstall`
-            -- ad-hoc) without further config changes.
             require('nvim-treesitter').install({
                 'c', 'lua', 'rust', 'cpp', 'go', 'javascript', 'typescript',
                 'python', 'yaml', 'json', 'helm', 'gitcommit', 'templ',
                 'markdown', 'markdown_inline', 'java', 'bash', 'vim', 'vimdoc',
-                'query', 'toml', 'dockerfile', 'html', 'css',
+                'query', 'toml', 'dockerfile', 'html', 'css', 'diff',
             })
         end
     },
