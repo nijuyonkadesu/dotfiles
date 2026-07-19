@@ -28,6 +28,13 @@
 # STATE FILE: first_time last_time count reminder_pid intervals...
 #   - Normal:   write ALL fields after successful curl
 #   - Reminder: read-only, never written
+#   - Per-pane (keyed by TERM_ID): COUNT/INTERVALS/GAP/local FIRST_TIME —
+#     the ping tally and cadence history are local to each terminal.
+#
+# GLOBAL STATE FILE (_global): global_first_time last_write_time
+#   Shared by every pane. Drives the 5hr reset + the bar/elapsed display
+#   only — whichever pane pings first after 5hr of silence *anywhere*
+#   starts the global clock; every pane's bar reflects that same clock.
 
 set -euo pipefail
 
@@ -100,6 +107,7 @@ build_header() {
   if [ -n "${TMUX:-}" ]; then
     HEADER="${HEADER} (tmux)"
   fi
+  HEADER="${HEADER} $(hostname)"
 }
 
 build_bar() {
@@ -131,6 +139,7 @@ else
 fi
 
 STATE_FILE="${STATE_DIR}/${TERM_ID}"
+GLOBAL_STATE_FILE="${STATE_DIR}/_global"
 mkdir -p "$STATE_DIR"
 
 # ── --help ─────────────────────────────────────────────────────────────
@@ -169,14 +178,23 @@ if [ "${1:-}" = "--reminder" ]; then
   SESSION_ELAPSED=$((NOW - FIRST_TIME))
   GAP=$((NOW - LAST_TIME))
 
-  # SESSION_EXPIRED=1 → no-op
+  # SESSION_EXPIRED=1 → no-op (this check stays local to this pane)
   [ "$SESSION_ELAPSED" -gt "$TIMEOUT" ] && exit 0
   # GAP < 50min → user active, no-op
   [ "$GAP" -lt "$WARNING" ] && exit 0
 
-  # Send reminder
+  # Send reminder — the bar reflects the global clock (shared across
+  # every pane), read-only here since --reminder never writes state.
+  GLOBAL_FIRST_TIME=$FIRST_TIME
+  if [ -f "$GLOBAL_STATE_FILE" ]; then
+    read -r G_FIRST _ < "$GLOBAL_STATE_FILE"
+    GLOBAL_FIRST_TIME=$G_FIRST
+  fi
+  [ $((NOW - GLOBAL_FIRST_TIME)) -gt "$TIMEOUT" ] && GLOBAL_FIRST_TIME=$NOW
+  GLOBAL_ELAPSED=$((NOW - GLOBAL_FIRST_TIME))
+
   build_header
-  build_bar "$SESSION_ELAPSED"
+  build_bar "$GLOBAL_ELAPSED"
   MSG="<b>𓇳 session idle 50m</b>
 ${HEADER}
 ${BAR} ${PCT}% [${ELAPSED_STR}]"
@@ -242,15 +260,22 @@ for I in $DISPLAY; do
   TAIL="${TAIL}$(fmt_interval "$I")"
 done
 
-SESSION_ELAPSED=$((NOW - FIRST_TIME))
+# ── Global clock (shared 5hr window + bar, across every pane) ──────────
+GLOBAL_FIRST_TIME=$NOW
+if [ -f "$GLOBAL_STATE_FILE" ]; then
+  read -r G_FIRST _ < "$GLOBAL_STATE_FILE"
+  [ $((NOW - G_FIRST)) -le "$TIMEOUT" ] && GLOBAL_FIRST_TIME=$G_FIRST
+fi
+GLOBAL_ELAPSED=$((NOW - GLOBAL_FIRST_TIME))
+
 build_header
 
 if [ "$BAR_MODE" -eq 1 ]; then
-  build_bar "$SESSION_ELAPSED"
+  build_bar "$GLOBAL_ELAPSED"
   TAIL_LINE="${HEADER}
 ${BAR} ${PCT}% [${ELAPSED_STR}]"
 else
-  ELAPSED_STR=$(fmt_time "$SESSION_ELAPSED")
+  ELAPSED_STR=$(fmt_time "$GLOBAL_ELAPSED")
   TAIL_LINE="${HEADER} · ${ELAPSED_STR}"
 fi
 
@@ -266,4 +291,5 @@ if send_msg "$MESSAGE" && [ "$DEBUG_MODE" -ne 1 ]; then
   else
     echo "$FIRST_TIME $NOW $COUNT $NEW_PID" > "$STATE_FILE"
   fi
+  echo "$GLOBAL_FIRST_TIME $NOW" > "$GLOBAL_STATE_FILE"
 fi
