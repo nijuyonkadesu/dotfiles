@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# ╔══════════════════════════════════════════════════════════════════════╗
+# ╔═════════════════════════════════════════════════════════════════════╗
 # ║                    STATE MACHINE TRUTH TABLE                        ║
 # ╠═══════════╦══════════════╦══════════╦═══════════════════════════════╣
-# ║   MODE    ║ SESSION_EXP  ║ GAP≥50m  ║ ACTION                       ║
+# ║   MODE    ║ SESSION_EXP  ║ GAP≥50m  ║ ACTION                        ║
 # ╠═══════════╬══════════════╬══════════╬═══════════════════════════════╣
 # ║ NORMAL    ║      0       ║    X     ║ send, update state,           ║
 # ║           ║              ║          ║ schedule reminder             ║
@@ -69,6 +69,21 @@ cancel_reminder() {
   fi
 }
 
+# Echo the global clock's start time, or nothing if _global is absent, empty,
+# or corrupt — notably the brief 0-byte window while another pane rewrites it
+# (echo > file truncates before writing). Without this, `read` on that empty
+# file returns non-zero and set -e would kill the notification. Callers apply
+# their own fallback when the result is empty.
+read_global_first() {
+  [ -s "$GLOBAL_STATE_FILE" ] || return 0
+  local g=""
+  read -r g _ < "$GLOBAL_STATE_FILE" || return 0
+  case "$g" in
+    ''|*[!0-9]*) return 0 ;;
+    *) printf '%s' "$g" ;;
+  esac
+}
+
 html_escape() {
   # An unescaped & in the replacement of ${var//pat/repl} means "insert
   # the matched text" (like sed's &) — so &lt;/&gt; must be written as
@@ -80,21 +95,68 @@ html_escape() {
   printf '%s' "$s"
 }
 
-send_msg() {
-  if [ "$DEBUG_MODE" -eq 1 ]; then
-    echo "── [debug] would POST to api.telegram.org/bot<key>/sendMessage ──" >&2
-    echo "chat_id=${CLAUDE_CODE_NOTIFY_TO_USERID}  parse_mode=HTML" >&2
-    echo "text:" >&2
-    echo "$1" >&2
-    echo "──────────────────────────────────────────────────────────────" >&2
-    return 0
-  fi
+# Strip the HTML markup (used for Telegram) back to plain text for native
+# macOS notifications, which have no markup. Tags are removed and the three
+# entities produced by html_escape are reversed (&amp; last, mirroring the
+# escape order in html_escape).
+strip_html() {
+  local s
+  s=$(printf '%s' "$1" | sed -E 's/<[^>]*>//g')
+  s="${s//&lt;/<}"
+  s="${s//&gt;/>}"
+  s="${s//&amp;/&}"
+  printf '%s' "$s"
+}
+
+# macOS backend: native Notification Center banner via osascript. Works
+# offline and is never subject to the corporate web gateway.
+send_msg_macos() {
+  local plain title subtitle body sound
+  plain=$(strip_html "$1")
+  title="Claude Code"
+  # First line is the event headline; the remaining lines are the details.
+  subtitle=$(printf '%s\n' "$plain" | sed -n '1p')
+  # Keep the remaining lines as real newlines so the progress bar renders on
+  # its own line in the notification instead of being mashed onto one line.
+  body=$(printf '%s\n' "$plain" | sed '1d')
+  sound="${CLAUDE_CODE_NOTIFY_SOUND:-Glass}"
+  # Pass the strings as argv rather than interpolating them into the
+  # AppleScript source, so quotes/backslashes in the message can neither
+  # break the script nor inject AppleScript.
+  osascript - "$title" "$subtitle" "$body" "$sound" >/dev/null 2>&1 <<'OSA' || return 1
+on run argv
+  display notification (item 3 of argv) with title (item 1 of argv) subtitle (item 2 of argv) sound name (item 4 of argv)
+end run
+OSA
+}
+
+# Telegram backend: used on non-macOS hosts (e.g. Linux).
+send_msg_telegram() {
   local resp
   resp=$(curl -s --max-time 10 -X POST "https://api.telegram.org/bot${CLAUDE_CODE_NOTIFY_APIKEY}/sendMessage" \
     -d chat_id="${CLAUDE_CODE_NOTIFY_TO_USERID}" \
     --data-urlencode "text=$1" \
     -d parse_mode="HTML") || return 1
   [ "$(jq -r '.ok // false' <<<"$resp" 2>/dev/null)" = "true" ]
+}
+
+send_msg() {
+  local backend="telegram"
+  if [ "$(uname -s)" = "Darwin" ]; then backend="macos"; fi
+
+  if [ "$DEBUG_MODE" -eq 1 ]; then
+    echo "── [debug] backend=${backend} ──" >&2
+    echo "text:" >&2
+    echo "$1" >&2
+    echo "──────────────────────────────────────────────────────────────" >&2
+    return 0
+  fi
+
+  if [ "$backend" = "macos" ]; then
+    send_msg_macos "$1"
+  else
+    send_msg_telegram "$1"
+  fi
 }
 
 schedule_reminder() {
@@ -186,10 +248,8 @@ if [ "${1:-}" = "--reminder" ]; then
   # Send reminder — the bar reflects the global clock (shared across
   # every pane), read-only here since --reminder never writes state.
   GLOBAL_FIRST_TIME=$FIRST_TIME
-  if [ -f "$GLOBAL_STATE_FILE" ]; then
-    read -r G_FIRST _ < "$GLOBAL_STATE_FILE"
-    GLOBAL_FIRST_TIME=$G_FIRST
-  fi
+  G_FIRST=$(read_global_first)
+  [ -n "$G_FIRST" ] && GLOBAL_FIRST_TIME=$G_FIRST
   [ $((NOW - GLOBAL_FIRST_TIME)) -gt "$TIMEOUT" ] && GLOBAL_FIRST_TIME=$NOW
   GLOBAL_ELAPSED=$((NOW - GLOBAL_FIRST_TIME))
 
@@ -262,9 +322,9 @@ done
 
 # ── Global clock (shared 5hr window + bar, across every pane) ──────────
 GLOBAL_FIRST_TIME=$NOW
-if [ -f "$GLOBAL_STATE_FILE" ]; then
-  read -r G_FIRST _ < "$GLOBAL_STATE_FILE"
-  [ $((NOW - G_FIRST)) -le "$TIMEOUT" ] && GLOBAL_FIRST_TIME=$G_FIRST
+G_FIRST=$(read_global_first)
+if [ -n "$G_FIRST" ] && [ $((NOW - G_FIRST)) -le "$TIMEOUT" ]; then
+  GLOBAL_FIRST_TIME=$G_FIRST
 fi
 GLOBAL_ELAPSED=$((NOW - GLOBAL_FIRST_TIME))
 
