@@ -37,8 +37,9 @@ All you needed to upscale your vanilla neovim to the Gigachad neovim
 
 ### Tips
 
-run `:checkhealth` and install dependencies if possible. In my case, I installed **ripgrep** and **fd**.
+- run `:checkhealth` and install dependencies if possible. In my case, I installed **ripgrep** and **fd**.
 2026-03-31 - run `npm install -g tree-sitter-cli` for treesitter to work.
+- `nvim leetcode.nvim` for launching leetcode within terminal, customize your username in `leetcode.lua` though.
 
 ### Source of Information
 
@@ -57,4 +58,8 @@ Just a copy of bashrc. Please don't ask me where's the macos and arch rc's are.
 
 ## 4. kitty
 
-kittens.
+kittens. image cat is wonderful in kitty. In mac tho, ghostty performing way better when ligatures are enabled in font, so I'm using ghostty there. In kde, I use konsole 🤷 (works fine tho).
+
+## 5. herdr (and tmux for running agents)
+
+Modified the keybinds to match with tmux. Added a variant of tmux sessionizer for herdr too. I personally have all agents running inside herdr with open TODO.md files as split in herdr. All open neovim projects are still in tmux. I like it that way.

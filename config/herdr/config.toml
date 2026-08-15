@@ -1,0 +1,53 @@
+# herdr configuration — ported from ~/.config/tmux/tmux.conf keybinds
+
+[terminal]
+new_cwd = "follow"
+
+[keys]
+prefix = "ctrl+b"
+
+settings = ""
+goto = ["prefix+g", "prefix+s"]
+
+reload_config = "prefix+r"
+resize_mode = "prefix+shift+r"
+
+rename_tab = "prefix+comma"
+rename_workspace = "prefix+shift+4"
+
+split_vertical = "prefix+shift+v"
+split_horizontal = "prefix+shift+h"
+
+new_tab = "prefix+c"
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
+switch_tab = ["prefix+1..9", "alt+1..9"]
+
+[[keys.command]]
+key = "prefix+f"
+type = "pane"
+command = "~/.local/bin/herdr-sessionizer"
+
+[[keys.command]]
+key = "prefix+shift+n"
+type = "pane"
+command = "~/.local/bin/herdr-sessionizer ~/Documents/notes"
+
+[ui]
+mouse_capture = true
+copy_on_select = true
+pane_borders = true
+pane_gaps = false
+
+agent_panel_sort = "spaces"
+show_agent_labels_on_pane_borders = false
+[theme]
+name = "rose-pine"
+auto_switch = false
+
+[ui.sound]
+enabled = false
+
+[ui.toast]
+delivery = "herdr"
+

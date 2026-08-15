@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# fzf directory -> herdr workspace switcher (tmux-sessionizer port for herdr)
+set -euo pipefail
+
+if [[ $# -eq 1 ]]; then
+    selected=$1
+else
+    dirs=$(find -L ~/redacted ~/documents/ -mindepth 1 -maxdepth 1 -type d)
+    selected=$(printf "%s\n%s\n%s\n%s\n%s" "$dirs" "$HOME/logs" "$HOME/test" "$HOME/.config/dotfiles/"| fzf)
+fi
+
+[[ -z "${selected:-}" ]] && exit 0
+
+label=$(basename "$selected" | tr . _)
+
+existing=$(herdr workspace list | jq -r --arg label "$label" '.result.workspaces[] | select(.label == $label) | .workspace_id' | head -n1)
+
+if [[ -n "$existing" ]]; then
+    herdr workspace focus "$existing"
+else
+    herdr workspace create --cwd "$selected" --label "$label" --focus
+fi

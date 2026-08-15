@@ -55,6 +55,8 @@ return {
                 -- If from difftool, open the diff
                 if is_difftool_qf() then
                     vim.cmd("Gvdiffsplit " .. difftool_branch)
+                else
+                    print("not difftool qf")
                 end
             end
 

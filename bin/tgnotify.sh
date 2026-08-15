@@ -129,9 +129,23 @@ detect_platform() {
   esac
 }
 
-# ── Stage: detect_scope → CTX_INTMUX, CTX_LABEL (display), CTX_ID (key) ───
+# ── Stage: detect_scope → CTX_INTMUX, CTX_INHERDR, CTX_LABEL, CTX_ID ──────
 detect_scope() {
-  if [ -n "${TMUX:-}" ]; then
+  CTX_INTMUX=0; CTX_INHERDR=0
+  if [ "${HERDR_ENV:-}" = "1" ] && [ -n "${HERDR_WORKSPACE_ID:-}" ]; then
+    CTX_INHERDR=1
+    local ws="" tab=""
+    ws=$(herdr workspace get "$HERDR_WORKSPACE_ID" 2>/dev/null \
+        | jq -r '.result.workspace.label // empty' 2>/dev/null) || ws=""
+    tab=$(herdr tab get "${HERDR_TAB_ID:-}" 2>/dev/null \
+        | jq -r '.result.tab.label // empty' 2>/dev/null) || tab=""
+    [ -z "$ws" ] && ws="herdr_${HERDR_WORKSPACE_ID}"
+    if [ -n "$tab" ] && [ "$tab" != "$ws" ]; then
+      CTX_LABEL="${ws}/${tab}"
+    else
+      CTX_LABEL="$ws"
+    fi
+  elif [ -n "${TMUX:-}" ]; then
     CTX_INTMUX=1
     local s=""
     s=$(tmux display-message -p -t "${TMUX_PANE:-}" '#{session_name}' 2>/dev/null) || s=""
@@ -142,7 +156,6 @@ detect_scope() {
     [ -z "$s" ] && s="tmux_${TMUX_PANE:-unknown}"
     CTX_LABEL="$s"
   else
-    CTX_INTMUX=0
     local cwd; cwd=$(pwd)
     CTX_LABEL="$(basename "$(dirname "$cwd")")/$(basename "$cwd")"
   fi
@@ -234,9 +247,10 @@ compose_tail() {                                   # "#N·i1·i2" (last 5 interv
   printf '%s' "$tail"
 }
 
-compose_header() {                                 # "☑ label (tmux)·hostname" | "☑ label·hostname"
-  if [ "$CTX_INTMUX" -eq 1 ]; then printf '☑ %s (tmux)·%s' "$1" "$(hostname)"
-  else printf '☑ %s·%s' "$1" "$(hostname)"; fi
+compose_header() {                       # "☑ label (tmux)" | "☑ label (herdr)" | "☑ label"
+  if [ "$CTX_INTMUX" -eq 1 ]; then printf '☑ %s (tmux)' "$1"
+  elif [ "$CTX_INHERDR" -eq 1 ]; then printf '☑ %s (herdr)' "$1"
+  else printf '☑ %s' "$1"; fi
 }
 
 compose_bar() {                                    # "▓▓░░ 45% [2h30m]"
