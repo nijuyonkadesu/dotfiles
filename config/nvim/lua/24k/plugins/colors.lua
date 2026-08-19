@@ -74,14 +74,7 @@ return {
             })
         end
     },
-    {
-        "tjdevries/colorbuddy.nvim",
-        lazy = false,
-        priority = 1000,
-        config = function()
-            vim.cmd.colorscheme "gruvbuddy"
-        end,
-    },
+    "tjdevries/colorbuddy.nvim",
     "tckmn/hotdog.vim", -- TROLL!??
     "craftzdog/solarized-osaka.nvim",
     "miikanissi/modus-themes.nvim",

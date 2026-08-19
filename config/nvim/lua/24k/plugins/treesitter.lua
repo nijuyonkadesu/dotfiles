@@ -1,5 +1,8 @@
+local treesitter_group = vim.api.nvim_create_augroup('TreesitterConfig', { clear = true })
+
 vim.api.nvim_create_autocmd('User', {
     pattern = 'TSUpdate',
+    group = treesitter_group,
     callback = function()
         require('nvim-treesitter.parsers').templ = {
             install_info = {
@@ -15,21 +18,37 @@ vim.api.nvim_create_autocmd('User', {
 -- > The main branch only handles installing/updating parsers and queries. To enable highlighting, indents, or folds for a buffer, you have to call vim.treesitter.start() yourself (typically from a FileType autocmd).
 -- sike... thanks, claude for fixing helm lsp & broken gitcommit colors
 vim.api.nvim_create_autocmd('FileType', {
-    callback = function()
-        -- Files larger than 100 KB still skip treesitter for perf.
-        local max_filesize = 100 * 1024 -- 100KB
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(0))
-        if ok and stats and stats.size > max_filesize then
+    group = treesitter_group,
+    callback = function(ev)
+        local buf = ev.buf
+        local lang = vim.treesitter.language.get_lang(ev.match)
+        if not lang then return end
+
+        local parser_available = vim.treesitter.language.add(lang)
+        if not parser_available then return end
+
+        local query_ok, highlights = pcall(vim.treesitter.query.get, lang, 'highlights')
+        if not query_ok or not highlights then return end
+
+        local max_filesize = 100 * 1024
+        local stats = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+        if stats and stats.size > max_filesize then
+            vim.treesitter.stop(buf)
             vim.notify(
-                "File larger than 100KB treesitter disabled for performance",
+                'Tree-sitter highlighting disabled for files larger than 100 KiB',
                 vim.log.levels.WARN,
-                { title = "Treesitter" }
+                { title = 'Tree-sitter' }
             )
             return
         end
-        -- not specifying pattern fires treesitter for all buffers. ig this is how it was prior to 0.12.0 neovim
-        -- pcall silently eats error message from treesitter whn no parser are installed
-        pcall(vim.treesitter.start)
+    -- since neovim 0.12.0? internally:
+    -- local parser = assert(vim.treesitter.get_parser(bufnr, lang))
+    -- vim.treesitter.highlighter.new(parser)
+    -- highlighter.new() creates another highlighter, registers callbacks on the parser, and then overwrites:
+    -- vim.treesitter.highlighter.active[bufnr] = new_highlighter
+    if not vim.treesitter.highlighter.active[buf] then
+            pcall(vim.treesitter.start, buf, lang)
+        end
     end,
 })
 
@@ -55,7 +74,7 @@ return {
     },
     {
         'nvim-treesitter/nvim-treesitter-context',
-        after = 'nvim-treesitter',
+        dependencies = { 'nvim-treesitter/nvim-treesitter' },
         config = function()
             require 'treesitter-context'.setup {
                 enable = true,            -- Enable this plugin (Can be enabled/disabled later via commands)

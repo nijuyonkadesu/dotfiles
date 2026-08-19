@@ -2,19 +2,21 @@ require("24k.remap")
 require("24k.set")
 require("24k.lazy")
 
--- automatically detect filetypes like log / conf etc
-vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
-    callback = function(ev)
-        vim.schedule(function()
-            if not vim.api.nvim_buf_is_valid(ev.buf) then return end
-            if vim.bo[ev.buf].buftype ~= '' then return end
-            if vim.bo[ev.buf].filetype ~= '' then return end
-            local name = vim.api.nvim_buf_get_name(ev.buf)
-            local ext = vim.fn.fnamemodify(name, ':e')
-            if ext == '' then return end
-            vim.bo[ev.buf].filetype = ext:lower()
-        end)
-    end,
+-- If Neovim cannot identify a filetype, fall back to a syntax definition whose
+-- name matches the extension. The lowest priority preserves all built-in and
+-- plugin-provided filetype detectors, and the runtime check avoids inventing
+-- arbitrary filetypes for unknown extensions.
+vim.filetype.add({
+    pattern = {
+        ['.*%.([%w_+-]+)'] = {
+            function(_, _, extension)
+                local filetype = extension:lower()
+                local syntax_files = vim.api.nvim_get_runtime_file('syntax/' .. filetype .. '.vim', false)
+                return #syntax_files > 0 and filetype or nil
+            end,
+            { priority = -math.huge },
+        },
+    },
 })
 
 local augroup = vim.api.nvim_create_augroup
