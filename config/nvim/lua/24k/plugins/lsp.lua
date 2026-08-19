@@ -32,6 +32,16 @@ return {
         config = function()
             local cmp = require('cmp')
             local cmp_lsp = require("cmp_nvim_lsp")
+            local lsp_servers = {
+                "gopls",
+                "yamlls",
+                "marksman",
+                "basedpyright",
+                "jsonls",
+                "helm_ls",
+                "lua_ls",
+                "jdtls",
+            }
             local capabilities = vim.tbl_deep_extend(
                 "force",
                 {},
@@ -40,35 +50,11 @@ return {
 
             require("fidget").setup({})
             require("mason").setup()
-            -----------------------------------------------------------------
-            -- mason-lspconfig: install servers + auto-enable them.
-            -- With automatic_enable=true it calls vim.lsp.enable() for each
-            -- server in ensure_installed; the handlers/automatic_installation
-            -- options from v1.x are no longer used here.
-            -----------------------------------------------------------------
-            require("mason-lspconfig").setup({
-                automatic_enable = true,
-                automatic_installation = {
-                    "black",
-                    "prettier",
-                },
-                ensure_installed = {
-                    "gopls",
-                    "yamlls",
-                    "marksman",
-                    "basedpyright",
-                    "jsonls",
-                    "helm_ls",
-                    "lua_ls",
-                    "jdtls",
-                },
-            })
 
             -----------------------------------------------------------------
             -- LSP server configuration (nvim 0.12 native API)
             --   nvim-lspconfig ships defaults at lsp/<name>.lua; vim.lsp.config
-            --   merges per-server overrides on top of those. mason-lspconfig's
-            --   automatic_enable then calls vim.lsp.enable() for ensure_installed.
+            --   merges per-server overrides on top of those.
             -----------------------------------------------------------------
 
             -- Global default for every server
@@ -77,16 +63,38 @@ return {
             })
 
             vim.lsp.config("lua_ls", {
+                on_init = function(client)
+                    if client.workspace_folders then
+                        local path = client.workspace_folders[1].name
+                        if path ~= vim.fn.stdpath("config")
+                            and (vim.uv.fs_stat(path .. "/.luarc.json")
+                                or vim.uv.fs_stat(path .. "/.luarc.jsonc")) then
+                            return
+                        end
+                    end
+
+                    local library = { vim.env.VIMRUNTIME }
+                    local lspconfig_library = vim.api.nvim_get_runtime_file("lua/lspconfig", false)[1]
+                    if lspconfig_library then
+                        table.insert(library, lspconfig_library)
+                    end
+
+                    client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+                        runtime = {
+                            version = "LuaJIT",
+                            path = { "lua/?.lua", "lua/?/init.lua" },
+                        },
+                        workspace = {
+                            checkThirdParty = false,
+                            library = library,
+                        },
+                    })
+                end,
                 settings = {
                     Lua = {
                         diagnostics = {
                             globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
                         },
-                        workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
-                            checkThirdParty = false,
-                        },
-                        runtime = { version = "Lua 5.1" },
                         format = {
                             enable = true,
                             -- Put format options here
@@ -101,32 +109,10 @@ return {
             })
 
             vim.lsp.config("tailwindcss", {
-                capabilities = capabilities,
                 filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte", "heex" },
             })
 
             vim.lsp.config("basedpyright", {
-                --local lspconfig = require('lspconfig')
-                --local util = require("lspconfig/util")
-                ---- https://www.reddit.com/r/neovim/comments/17bod01/how_do_i_select_a_python_enviroment_so_pyright/
-                ---- https://github.com/hahuang65/nvim-config/blob/38aca9f78b4e773d0452ecb953ccdbe9915ac3d9/lua/plugins/lsp.lua#L82
-                --on_init = function(client)
-                --    -- https://github.com/DetachHead/basedpyright/issues/482
-                --    client.server_capabilities.semanticTokensProvider = nil
-                --end,
-                --root_dir = function(fname)
-                --    local root = util.root_pattern("requirements.txt", "pyproject.toml", "setup.py", "app")(
-                --            fname)
-                --        or util.root_pattern(".git")(fname)
-                --        or util.path.dirname(fname)
-
-                --    local venv_dir = root .. 'venv'
-                --    if util.path.exists(venv_dir) then
-                --        vim.g.python3_host_prog = venv_dir .. '/bin/python'
-                --    end
-
-                --    return root
-                --end,
                 settings = {
                     basedpyright = {
                         analysis = {
@@ -134,8 +120,7 @@ return {
                             diagnosticMode = "openFilesOnly",
                             typeCheckingMode = "standard",
                             reportMissingSuperCall = false,
-                            autoSearchPaths = true,
-                            extraPaths = dofile(vim.fn.stdpath('config') .. "/after/extra-paths.lua"),
+                            extraPaths = dofile(vim.fn.stdpath("config") .. "/after/extra-paths.lua"),
                         },
                     },
                 },
@@ -240,6 +225,11 @@ return {
                 },
             })
 
+            require("mason-lspconfig").setup({
+                ensure_installed = lsp_servers,
+                automatic_enable = lsp_servers,
+            })
+
             cmp.setup({
                 snippet = {
                     expand = function(args)
@@ -261,7 +251,6 @@ return {
                 sources = cmp.config.sources({
                     { name = "luasnip" },
                     { name = "nvim_lsp" },
-                    { name = "friendly_snippets" },
                 }, {
                     { name = "path" },
                     { name = "buffer", keyword_length = 3 },
