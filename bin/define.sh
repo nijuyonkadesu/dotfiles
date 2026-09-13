@@ -6,7 +6,7 @@ word=${1:-$(wl-paste -p 2>/dev/null)}
 [[ -z "$word" || "$word" =~ [\/] ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid input." && exit 0
 
 query=$(curl -fsS --connect-timeout 5 --max-time 10 \
-    --get "http://ustable.buru-ule.ts.net:18787/v1/query" \
+    --get "http://ustable.buru-ule.ts.net:8787/v1/query" \
     --data-urlencode "q=$word")
 
 # Check for connection error
